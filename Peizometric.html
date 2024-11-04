@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groundwater Monitoring App</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* Simple styling */
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        #map { height: 500px; width: 100%; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<h1>Groundwater Monitoring Application</h1>
+
+<!-- Form for Water Level Data Entry -->
+<h2>Water Level Data Entry</h2>
+<form id="waterLevelForm">
+    <label for="wellId">Well ID:</label>
+    <input type="text" id="wellId" name="wellId" required><br><br>
+    
+    <label for="depth">Depth:</label>
+    <input type="number" id="depth" name="depth" required><br><br>
+    
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required><br><br>
+    
+    <label for="waterLevel">Water Level:</label>
+    <input type="number" id="waterLevel" name="waterLevel" required><br><br>
+    
+    <button type="submit">Submit</button>
+</form>
+
+<!-- Map to Show Piezometric Data -->
+<h2>Piezometric Map</h2>
+<div id="map"></div>
+
+<!-- Include Leaflet JS library -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    // Initialize map
+    var map = L.map('map').setView([9.145, 40.489673], 7);  // Centered on Ethiopia
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Sample data points array for testing
+    const piezometricData = [
+        { id: 1, latitude: 9.0, longitude: 40.5, waterLevel: 45 },
+        { id: 2, latitude: 9.2, longitude: 40.6, waterLevel: 50 },
+        { id: 3, latitude: 9.1, longitude: 40.4, waterLevel: 42 }
+    ];
+
+    // Function to add data points to the map
+    function plotDataOnMap(data) {
+        data.forEach(point => {
+            L.marker([point.latitude, point.longitude])
+                .addTo(map)
+                .bindPopup(`<b>Water Level:</b> ${point.waterLevel} m`);
+        });
+    }
+
+    // Plot initial sample data on map
+    plotDataOnMap(piezometricData);
+
+    // Handle form submission
+    document.getElementById("waterLevelForm").addEventListener("submit", function(event) {
+        event.preventDefault();  // Prevent form from reloading the page
+
+        // Get form data
+        const wellId = document.getElementById("wellId").value;
+        const depth = document.getElementById("depth").value;
+        const date = document.getElementById("date").value;
+        const waterLevel = document.getElementById("waterLevel").value;
+
+        // Display alert to confirm submission
+        alert(`Water level data recorded:\nWell ID: ${wellId}\nDepth: ${depth} m\nDate: ${date}\nWater Level: ${waterLevel} m`);
+
+        // Add new data point to map (hardcoded coordinates for testing)
+        L.marker([9.145, 40.489673])
+            .addTo(map)
+            .bindPopup(`<b>Well ID:</b> ${wellId}<br><b>Water Level:</b> ${waterLevel} m<br><b>Date:</b> ${date}`);
+
+        // Clear the form fields
+        document.getElementById("waterLevelForm").reset();
+    });
+</script>
+
+</body>
+</html>
